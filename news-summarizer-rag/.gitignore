@@ -1,0 +1,154 @@
+﻿# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ============================================
+# Node.js / React Frontend
+# ============================================
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+frontend/build/
+frontend/dist/
+build/
+dist/
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+
+# ============================================
+# AI Model Files (Too Large for GitHub)
+# ============================================
+models/cache/
+models/*.bin
+models/*.safetensors
+models/*.pt
+models/*.pth
+models/*.onnx
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.onnx
+.huggingface/
+cache/
+
+# ============================================
+# Data & Log Files
+# ============================================
+data/
+logs/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+*.csv
+!package.json
+!package-lock.json
+
+# ============================================
+# Environment & Configuration
+# ============================================
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*.crt
+
+# ============================================
+# IDE & Editor
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+.project
+.classpath
+.settings/
+
+# ============================================
+# OS Generated Files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.tmp
+
+# ============================================
+# Testing & Coverage
+# ============================================
+.coverage
+.coverage.*
+.htmlcov/
+.pytest_cache/
+.tox/
+*.cover
+.hypothesis/
+coverage.xml
+
+# ============================================
+# Docker
+# ============================================
+.dockerignore
+docker-compose.override.yml
+
+# ============================================
+# Backup & Temporary Files
+# ============================================
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.tmp
+*.temp
+
+# ============================================
+# Keep these files (Don't ignore)
+# ============================================
+!.gitignore
+!README.md
+!LICENSE
+!requirements.txt
+!package.json
+!package-lock.json
+!.env.example
