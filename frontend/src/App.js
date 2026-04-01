@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Toaster, toast } from 'react-hot-toast';
 import Auth from './Auth';
@@ -47,36 +47,45 @@ function App() {
     { id: 'World News API', name: 'World News' }
   ];
 
-  useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
-    
-    if (token && savedUser) {
-      const userData = JSON.parse(savedUser);
-      setUser(userData);
-      setIsAuthenticated(true);
-      
-      // Check if onboarding was completed
-      const onboardingCompleted = localStorage.getItem('onboardingCompleted');
-      if (!onboardingCompleted) {
-        setShowOnboarding(true);
-      } else {
-        fetchNews();
-        fetchStats();
-        setGreeting(getGreeting());
-      }
-    }
-  }, []);
-
-  const getGreeting = () => {
+  const getGreeting = useCallback(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good Morning';
     if (hour < 18) return 'Good Afternoon';
     return 'Good Evening';
-  };
+  }, []);
 
-  const fetchNews = async (type = 'personalized', query = '', category = null) => {
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('onboardingCompleted');
+    setIsAuthenticated(false);
+    setUser(null);
+    toast.success('Logged out successfully');
+  }, []);
+
+  const fetchStats = useCallback(async () => {
+    if (!user?.id) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/api/v1/user/${user.id}/stats`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      if (response.data) {
+        setStats({
+          totalRead: response.data.totalRead || 0,
+          interests: response.data.interests || user?.interests || [],
+          ragEnabled: response.data.ragEnabled !== undefined ? response.data.ragEnabled : true
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  }, [user?.id, user?.interests]);
+
+  const fetchNews = useCallback(async (type = 'personalized', query = '', category = null) => {
+    if (!user?.id && type === 'personalized') return;
+    
     setLoading(true);
     try {
       let url = '';
@@ -126,30 +135,42 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id, selectedSource, sortBy, handleLogout]);
 
-  const fetchStats = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/api/v1/user/${user?.id}/stats`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
-      if (response.data) {
-        setStats({
-          totalRead: response.data.totalRead || 0,
-          interests: response.data.interests || user?.interests || [],
-          ragEnabled: response.data.ragEnabled !== undefined ? response.data.ragEnabled : true
-        });
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    const savedUser = localStorage.getItem('user');
+    
+    if (token && savedUser) {
+      const userData = JSON.parse(savedUser);
+      setUser(userData);
+      setIsAuthenticated(true);
+      
+      // Check if onboarding was completed
+      const onboardingCompleted = localStorage.getItem('onboardingCompleted');
+      if (!onboardingCompleted) {
+        setShowOnboarding(true);
+      } else {
+        setGreeting(getGreeting());
       }
-    } catch (error) {
-      console.error('Error fetching stats:', error);
     }
-  };
+  }, [getGreeting]);
+
+  useEffect(() => {
+    if (isAuthenticated && !showOnboarding) {
+      fetchNews();
+      fetchStats();
+    }
+  }, [isAuthenticated, showOnboarding, fetchNews, fetchStats]);
 
   const generateSummary = async (articleId, content) => {
+    if (!user?.id) return;
+    
     if (summaries[articleId]) {
-      delete summaries[articleId];
-      setSummaries({ ...summaries });
+      const newSummaries = { ...summaries };
+      delete newSummaries[articleId];
+      setSummaries(newSummaries);
       return;
     }
     
@@ -166,7 +187,7 @@ function App() {
       });
       
       if (response.data && response.data.summary) {
-        setSummaries({ ...summaries, [articleId]: response.data.summary });
+        setSummaries(prev => ({ ...prev, [articleId]: response.data.summary }));
         toast.success('✨ Summary generated!', { id: 'summary' });
       }
     } catch (error) {
@@ -181,20 +202,9 @@ function App() {
     setShowOnboarding(true);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('onboardingCompleted');
-    setIsAuthenticated(false);
-    setUser(null);
-    toast.success('Logged out successfully');
-  };
-
   const handleOnboardingComplete = () => {
     localStorage.setItem('onboardingCompleted', 'true');
     setShowOnboarding(false);
-    fetchNews();
-    fetchStats();
     setGreeting(getGreeting());
   };
 
@@ -218,6 +228,8 @@ function App() {
   };
 
   const updateInterests = async () => {
+    if (!user?.id) return;
+    
     const interestsInput = prompt(
       'Select your interests (comma-separated):\n\nAvailable: technology, politics, business, health, sports, science, entertainment\n\nCurrent: ' + (user?.interests?.join(', ') || ''),
       user?.interests?.join(', ') || ''
@@ -241,7 +253,7 @@ function App() {
           { headers: token ? { Authorization: `Bearer ${token}` } : {} }
         );
         setUser({ ...user, interests: validInterests });
-        setStats({ ...stats, interests: validInterests });
+        setStats(prev => ({ ...prev, interests: validInterests }));
         toast.success('🎯 Interests updated!');
         fetchNews('personalized');
       } catch (error) {
@@ -256,7 +268,7 @@ function App() {
       const response = await axios.post(`${API_BASE_URL}/api/v1/settings/toggle-rag`, {}, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
-      setStats({ ...stats, ragEnabled: response.data.ragEnabled });
+      setStats(prev => ({ ...prev, ragEnabled: response.data.ragEnabled }));
       toast.success(`RAG ${response.data.ragEnabled ? 'enabled' : 'disabled'}`);
     } catch (error) {
       toast.error('Failed to toggle RAG');
