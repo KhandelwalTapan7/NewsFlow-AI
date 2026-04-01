@@ -1,12 +1,5 @@
 ```markdown
 # 📰 NewsFlow-AI
-
-[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-18.2+-blue.svg)](https://reactjs.org/)
-[![Transformers](https://img.shields.io/badge/Transformers-4.36+-orange.svg)](https://huggingface.co/docs/transformers)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
 **NewsFlow-AI** is an intelligent real-time news aggregator that fetches articles from 4 different news sources, generates AI-powered summaries using BART transformer models, and delivers personalized news feeds with historical context through RAG (Retrieval-Augmented Generation).
 
 ## ✨ Features
@@ -256,24 +249,6 @@ MAX_ARTICLES_PER_FETCH=50
 DEFAULT_COUNTRY=us
 ```
 
-## 🚀 Deployment
-
-### Docker Deployment
-
-```bash
-# Build images
-docker-compose build
-
-# Run containers
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop containers
-docker-compose down
-```
-
 ### Production Checklist
 
 - [ ] Set `DEBUG=false` in `.env`
@@ -342,40 +317,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Issues:** [Report a bug](https://github.com/KhandelwalTapan7/NewsFlow-AI/issues)
 
-## 🌟 Star History
-
-If you find this project useful, please consider giving it a star ⭐
-
----
-
-## 🎯 Roadmap
-
-### Version 1.0 (Current)
-- [x] 4 News API integration
-- [x] AI summarization with BART
-- [x] RAG context enhancement
-- [x] User authentication
-- [x] React frontend
-- [x] Category filtering
-- [x] Search functionality
-- [x] Onboarding tutorial
-
-### Version 2.0 (Planned)
-- [ ] Mobile app (React Native)
-- [ ] Email newsletters
-- [ ] Push notifications
-- [ ] Multi-language support
-- [ ] Sentiment analysis
-- [ ] Social sharing
-- [ ] Bookmark articles
-- [ ] Voice search
-- [ ] Dark mode toggle
-- [ ] More news sources
-
----
-
-**Made by Tapan Khandelwal**
-
-
-
-This is the complete README.md content in one cell. Copy and paste it directly into your `README.md` file! 🚀
