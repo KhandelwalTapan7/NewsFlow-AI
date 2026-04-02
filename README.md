@@ -1,6 +1,3 @@
-```markdown
-# 📰 NewsFlow-AI
-**NewsFlow-AI** is an intelligent real-time news aggregator that fetches articles from 4 different news sources, generates AI-powered summaries using BART transformer models, and delivers personalized news feeds with historical context through RAG (Retrieval-Augmented Generation).
 
 ## ✨ Features
 
